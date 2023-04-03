@@ -576,24 +576,26 @@
       return result;
     };
 
-    if (typeof Buffer === 'function') {
-      api.addReader(function (data, format) {
-        if (Buffer.isBuffer(data)) {
-          return new BufferReader(data);
-        }
-        if (format === 'hex' || format === 'base64') {
-          var buffer = Buffer.from(data, format);
-          return new BufferReader(buffer);
-        }
-      });
-      api.addWriter(function (format) {
-        if (!format || format === 'buffer') {
-          return new BufferWriter();
-        } else if (format === 'hex' || format === 'base64') {
-          return new BufferWriter(format);
-        }
-      });
-    }
+
+    api.addReader(function (data, format) {
+      if (Buffer.isBuffer(data)) {
+        return new BufferReader(data);
+      }
+      if (ArrayBuffer.isView(data)) {
+        return new BufferReader(Buffer.from(data));
+      }
+      if (format === 'hex' || format === 'base64') {
+        var buffer = Buffer.from(data, format);
+        return new BufferReader(buffer);
+      }
+    });
+    api.addWriter(function (format) {
+      if (!format || format === 'buffer') {
+        return new BufferWriter();
+      } else if (format === 'hex' || format === 'base64') {
+        return new BufferWriter(format);
+      }
+    });
 
     /** Hex-encoding (and Latin1) for browser **/
     function HexReader(hex) {

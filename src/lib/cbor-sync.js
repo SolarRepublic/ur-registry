@@ -576,7 +576,6 @@
       return result;
     };
 
-
     api.addReader(function (data, format) {
       if (Buffer.isBuffer(data)) {
         return new BufferReader(data);
